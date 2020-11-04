@@ -13,6 +13,7 @@ export const Navbar = ({title}) => {
 
 const styles = StyleSheet.create({
   navbar: {
+    // flex: 2,
     height: '10%',
     justifyContent: 'flex-end',
     alignItems: 'center',

@@ -5,6 +5,7 @@ import {CatImage} from '../components/CatImage'
 import {Button} from 'react-native-elements'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import {LoadingContext} from "../context/LoadingContext"
+import {downloadFile} from "../utils/downloadFile"
 
 export default function MainPage() {
   const [cat, setCat] = useState({})
@@ -13,6 +14,8 @@ export default function MainPage() {
   const fetchCat = () => {
     setLoading(true)
     const apiUrl = 'https://api.thecatapi.com/v1/images/search'
+    // const apiUrl = 'https://api.thecatapi.com/v1/images/search?mime_types=gif'
+
     fetch(apiUrl)
       .then(res => res.json())
       .then(res => {
@@ -28,21 +31,36 @@ export default function MainPage() {
     <View style={styles.container}>
       <Navbar title="Гык"/>
       <CatImage cat={cat} loading={loading}/>
-      <Button
-        title='Хочу ещё котика!'
-        onPress={fetchCat}
-        containerStyle={styles.btnContainer}
-        buttonStyle={styles.btn}
-        loading={loading}
-        disabled={loading}
-        icon={
-          <Icon
-            name="cat"
-            size={25}
-            color="white"
-          />
-        }
-      />
+      <View style={styles.btnsContainer}>
+        <Button
+          title=''
+          onPress={() => downloadFile(cat.url)}
+          containerStyle={styles.btnContainer}
+          buttonStyle={[styles.btn, styles.roundBtn]}
+          disabled={loading}
+          icon={
+            <Icon
+              name="content-save"
+              size={25}
+              color="white"
+            />
+          }
+        />
+        <Button
+          title='Хочу ещё котика!'
+          onPress={fetchCat}
+          containerStyle={styles.btnContainer}
+          buttonStyle={styles.btn}
+          disabled={loading}
+          icon={
+            <Icon
+              name="cat"
+              size={25}
+              color="white"
+            />
+          }
+        />
+      </View>
     </View>
   )
 }
@@ -53,16 +71,24 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between'
   },
   btnContainer: {
-    height: '10%',
-    marginBottom: '10%',
+    height: '100%',
     alignItems: 'center',
-    // justifyContent: 'space-between'
   },
   btn: {
-    marginBottom: 20,
     backgroundColor: '#d24615',
     height: '100%',
-    width: '70%',
     borderRadius: 5000,
+    paddingHorizontal: 30,
+  },
+  roundBtn: {
+    aspectRatio: 1,
+    paddingHorizontal: 0
+  },
+  btnsContainer: {
+    // flex: 1,
+    height: '10%',
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    marginBottom: '7%'
   }
 })
