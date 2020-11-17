@@ -1,27 +1,40 @@
-import React, {useContext, useEffect, useState} from 'react'
-import {StyleSheet, View, Share} from 'react-native'
-import {Navbar} from '../components/Navbar'
-import {CatImage} from '../components/CatImage'
-import {Button} from 'react-native-elements'
+import React, { useContext, useEffect, useState } from 'react'
+import { StyleSheet, View, Share } from 'react-native'
+import { Navbar } from '../components/Navbar'
+import { CatImage } from '../components/CatImage'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
-import {LoadingContext} from "../context/LoadingContext"
-import {downloadFile} from "../utils/downloadFile"
-import {getRandomMsg} from "../utils/randomShareMsg"
+import { LoadingContext } from '../context/LoadingContext'
+import { downloadFile } from '../utils/downloadFile'
+import { getRandomMsg } from '../utils/randomShareMsg'
+import { FiltersModal } from '../components/FiltersModal'
+import { OrangeButton } from '../components/OrangeButton'
 
 export default function MainPage() {
   const [cat, setCat] = useState({})
-  const {loading, setLoading} = useContext(LoadingContext)
+  const [isOptionsOpen, setIsOptionsOpen] = useState(false)
+  const [filterString, setFilterString] = useState('')
+
+  const { loading, setLoading } = useContext(LoadingContext)
 
   const fetchCat = () => {
     setLoading(true)
-    const apiUrl = 'https://api.thecatapi.com/v1/images/search'
-    // const apiUrl = 'https://api.thecatapi.com/v1/images/search?mime_types=gif'
+    let apiUrl = 'https://api.thecatapi.com/v1/images/search'
+    apiUrl += filterString ? `?${filterString}` : ''
 
-  fetch(apiUrl)
-    .then(res => res.json())
-    .then(res => {
-      setCat(res[0])
-    })
+    fetch(apiUrl)
+      .then(res => res.json())
+      .then(res => {
+        setCat(res[0])
+      })
+  }
+
+  const applyFilters = mimeTypes => {
+    if (mimeTypes.length === 3) {
+      setFilterString('')
+    } else {
+      setFilterString(`mime_types=${mimeTypes.join(',')}`)
+    }
+    setIsOptionsOpen(false)
   }
 
   const onShare = async () => {
@@ -49,52 +62,38 @@ export default function MainPage() {
 
   return (
     <View style={styles.container}>
-      <Navbar title="Гык"/>
-      <CatImage cat={cat} loading={loading}/>
-      <View style={styles.btnsContainer}>
-        <Button
-          title=''
+      <FiltersModal visible={isOptionsOpen} onClose={applyFilters} />
+      <Navbar title="Гык" />
+      <CatImage cat={cat} loading={loading} />
+      <OrangeButton.Container style={{ marginBottom: '7%' }}>
+        <OrangeButton
+          title=""
           onPress={() => downloadFile(cat.url)}
-          containerStyle={styles.btnContainer}
-          buttonStyle={[styles.btn, styles.roundBtn]}
           disabled={loading}
-          icon={
-            <Icon
-              name="content-save"
-              size={25}
-              color="white"
-            />
-          }
+          icon={<Icon name="content-save" size={25} color="white" />}
+          isRound
         />
-        <Button
-          title=''
+        <OrangeButton
+          title=""
           onPress={onShare}
-          containerStyle={styles.btnContainer}
-          buttonStyle={[styles.btn, styles.roundBtn]}
           disabled={loading}
-          icon={
-            <Icon
-              name="share-variant"
-              size={25}
-              color="white"
-            />
-          }
+          icon={<Icon name="share-variant" size={25} color="white" />}
+          isRound
         />
-        <Button
-          title='Хочу ещё котика!'
+        <OrangeButton
+          title=""
+          onPress={() => setIsOptionsOpen(true)}
+          disabled={loading}
+          icon={<Icon name="filter" size={25} color="white" />}
+          isRound
+        />
+        <OrangeButton
+          title="Хочу ещё котика!"
           onPress={fetchCat}
-          containerStyle={styles.btnContainer}
-          buttonStyle={styles.btn}
           disabled={loading}
-          icon={
-            <Icon
-              name="cat"
-              size={25}
-              color="white"
-            />
-          }
+          icon={<Icon name="cat" size={25} color="white" />}
         />
-      </View>
+      </OrangeButton.Container>
     </View>
   )
 }
@@ -102,27 +101,6 @@ export default function MainPage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   },
-  btnContainer: {
-    height: '100%',
-    alignItems: 'center',
-  },
-  btn: {
-    backgroundColor: '#d24615',
-    height: '100%',
-    borderRadius: 5000,
-    paddingHorizontal: 30,
-  },
-  roundBtn: {
-    aspectRatio: 1,
-    paddingHorizontal: 0
-  },
-  btnsContainer: {
-    // flex: 1,
-    height: '8%',
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    marginBottom: '7%'
-  }
 })
