@@ -4,7 +4,7 @@ import { OrangeButton } from './OrangeButton'
 import Icon from 'react-native-vector-icons/FontAwesome5'
 
 export const OptionsGroup = ({ children, disabled }) => {
-  const [isOpen, setIsOpen] = useState(true)
+  const [isOpen, setIsOpen] = useState(false)
   return (
     <>
       <View style={isOpen ? styles.container : {}}>
