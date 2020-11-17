@@ -39,6 +39,7 @@ const styles = StyleSheet.create({
     height: '100%',
     borderRadius: 5000,
     paddingHorizontal: 15,
+    width: (Dimensions.get('window').width / 100) * 60,
   },
   roundBtn: {
     aspectRatio: 1,
