@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { StyleSheet, View, Share } from 'react-native'
+import { StyleSheet, View, Share, Dimensions, Text, Button } from 'react-native'
 import { Navbar } from '../components/Navbar'
 import { CatImage } from '../components/CatImage'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
@@ -8,9 +8,11 @@ import { downloadFile } from '../utils/downloadFile'
 import { getRandomMsg } from '../utils/randomShareMsg'
 import { FiltersModal } from '../components/FiltersModal'
 import { OrangeButton } from '../components/OrangeButton'
+import { OptionsGroup } from '../components/OptionsGroup'
 
 export default function MainPage() {
   const [cat, setCat] = useState({})
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false)
   const [isOptionsOpen, setIsOptionsOpen] = useState(false)
   const [filterString, setFilterString] = useState('')
 
@@ -34,7 +36,7 @@ export default function MainPage() {
     } else {
       setFilterString(`mime_types=${mimeTypes.join(',')}`)
     }
-    setIsOptionsOpen(false)
+    setIsFiltersOpen(false)
   }
 
   const onShare = async () => {
@@ -62,31 +64,40 @@ export default function MainPage() {
 
   return (
     <View style={styles.container}>
-      <FiltersModal visible={isOptionsOpen} onClose={applyFilters} />
+      <FiltersModal visible={isFiltersOpen} onClose={applyFilters} />
       <Navbar title="Гык" />
       <CatImage cat={cat} loading={loading} />
+
       <OrangeButton.Container style={{ marginBottom: '7%' }}>
-        <OrangeButton
-          title=""
-          onPress={() => downloadFile(cat.url)}
-          disabled={loading}
-          icon={<Icon name="content-save" size={25} color="white" />}
-          isRound
-        />
-        <OrangeButton
-          title=""
-          onPress={onShare}
-          disabled={loading}
-          icon={<Icon name="share-variant" size={25} color="white" />}
-          isRound
-        />
-        <OrangeButton
-          title=""
-          onPress={() => setIsOptionsOpen(true)}
-          disabled={loading}
-          icon={<Icon name="filter" size={25} color="white" />}
-          isRound
-        />
+        <OptionsGroup disabled={loading}>
+          <OrangeButton.Container style={{ marginBottom: 5 }}>
+            <OrangeButton
+              title=""
+              onPress={() => downloadFile(cat.url)}
+              disabled={loading}
+              icon={<Icon name="content-save" size={25} color="white" />}
+              isRound
+            />
+          </OrangeButton.Container>
+          <OrangeButton.Container style={{ marginBottom: 5 }}>
+            <OrangeButton
+              title=""
+              onPress={onShare}
+              disabled={loading}
+              icon={<Icon name="share-variant" size={25} color="white" />}
+              isRound
+            />
+          </OrangeButton.Container>
+          <OrangeButton.Container style={{ marginBottom: 5 }}>
+            <OrangeButton
+              title=""
+              onPress={() => setIsFiltersOpen(true)}
+              disabled={loading}
+              icon={<Icon name="filter" size={25} color="white" />}
+              isRound
+            />
+          </OrangeButton.Container>
+        </OptionsGroup>
         <OrangeButton
           title="Хочу ещё котика!"
           onPress={fetchCat}
